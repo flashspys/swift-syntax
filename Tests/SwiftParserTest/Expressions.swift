@@ -705,4 +705,12 @@ final class ExpressionTests: XCTestCase {
       }()
       """)
   }
+  
+  func testArgumentListMissingComma() {
+    AssertParse(
+      """
+      someFunction(foo: bar #^DIAG_1^#foo1: bar2)
+      """,
+    diagnostics: [DiagnosticSpec(locationMarker: "DIAG_1", message: "expected ',' in function call")])
+  }
 }
