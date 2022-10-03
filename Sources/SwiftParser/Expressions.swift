@@ -2169,11 +2169,11 @@ extension Parser {
         expr = self.parseExpression(pattern: pattern)
       }
       keepGoing = self.consume(if: .comma)
-      if keepGoing == nil,
-         labelAndColon != nil,
-         expr.syntax.isMissingAllTokens == false,
-         self.currentToken.tokenKind != .rightParen {
-        keepGoing = .init(missing: .comma, arena: self.arena)
+      if keepGoing == nil {
+        var lookahead = self.lookahead()
+        if lookahead.consume(if: { $0.canBeArgumentLabel }, followedBy: { $0.tokenKind == .colon }) != nil {
+          keepGoing = missingToken(.comma, text: nil)
+        }
       }
       // TODO: Fix location of missing comma
       result.append(RawTupleExprElementSyntax(
